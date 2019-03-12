@@ -16,17 +16,17 @@
     <script src="settings.js"></script>
     <script type="text/javascript">
       function ppDate(date) {
-        return ['Jan.', 'Feb.', 'Mar.', 
+        return ['Jan.', 'Feb.', 'Mar.',
                 'Apr.', 'May.', 'Jun.',
-                'Jul.', 'Aug.', 'Sep.', 
-                'Oct.', 'Nov.', 'Dec.'][date.getMonth()] + " " + (function (d) { 
+                'Jul.', 'Aug.', 'Sep.',
+                'Oct.', 'Nov.', 'Dec.'][date.getMonth()] + " " + (function (d) {
                   var s = d.toString(), l = s[s.length-1];
                   if (s == 11 || s == 12) return s + 'th';
                   return s+(['st','nd','rd'][l-1] || 'th');
                 })(date.getUTCDate()) + ", " + date.getFullYear() + " ";
       }
 
-      
+
       function createPieChart(stats) {
         var chart_data = {}
         chart_data.width = $(window).width();
@@ -69,17 +69,26 @@
                         .range([0, W]);
 
         // For every tag in display_group
-        for(var q=0;q<filter.length;q++) {
+        for(var q in st) {
+          if (!st.hasOwnProperty(q)) continue;
+          var keep = false;
+          for(var f=0; f<filter.length; f++) {
+            if (q.startsWith(filter[f])) {
+              keep = true;
+              break;
+            }
+          }
+          if (!keep) continue;
+
           var filter_div = filters_div.append("div").attr("class", "fdiv");
-          console.log("f:"+filter[q]);
-          var dt = st[filter[q]];
+          var dt = st[q];
           if(dt == null) continue;
           console.log(dt);
           var col = dt['color'];
           console.log("col:"+col);
           var minute = dt['minute'];
 
-          filter_div.append("p").attr("class", "tt").attr("style", "color:"+col).text(filter[q]);
+          filter_div.append("p").attr("class", "tt").attr("style", "color:"+col).text(q);
 
           var g = svg.selectAll("e")
                      .data(minute)
@@ -113,7 +122,7 @@
         $("#spinnerdiv").empty();
       }
 
-      
+
       function fetchAndLoadEvents(daylog) {
         loaded = false;
         // we do this random thing to defeat caching.
@@ -121,7 +130,7 @@
         console.log(json_path)
           $.getJSON(json_path, function(data){
             loaded = true;
-            
+
             // Save these as globals so that we can access them later
             dailyData = data['piedata'];
             minuteData = data['tagdata'];
@@ -143,7 +152,7 @@
           console.log("loglist" + loglist.length);
           curLogId = loglist.length - 1;
           if('gotoday' in QueryString) { curLogId = parseInt(QueryString.gotoday); }
-          
+
           fetchAndLoadEvents(loglist[curLogId]);
           writeTotalTime(loglist[curLogId].totalTime);
           writeCarousel(loglist[curLogId]);
@@ -165,7 +174,7 @@
                    });
           });
 
-          
+
           // setup arrow events
           $("#leftarrow").click(function() {
             curLogId--;
@@ -205,12 +214,9 @@
 
     </script>
   </head>
-  
+
   <body onload="start()">
     <div id="spinnerdiv"></div>
-    <div id="reloadbutton">&#10226</div>
-    <div id="overviewlink"><a href="./overview">Overview</a></div>
-    <h1 class="main-header">Daily Usage Stats!</h1>
     <div>
       <div id="leftarrow" class="arrow">&#8592;</div>
       <div id="rightarrow" class="arrow">&#8594;</div>

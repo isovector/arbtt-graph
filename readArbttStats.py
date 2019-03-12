@@ -13,7 +13,7 @@ import json
 
 def toJson(dic, jsonpath):
   """
-  
+
   Arguments:
   - `dic`:
   - `jsonpath`:
@@ -34,10 +34,7 @@ def toChartJS(daildic, mindic, color, name):
   for day in daildic:
     jsonname = name + '-' + day + '.json'
     d = daildic[day]
-    try:
-      mind = mindic[day]
-    except KeyError:
-      mind = {}
+    mind = mindic[day]
     data = []
     totaltime = 0
     for index, item in enumerate(d):
@@ -56,7 +53,7 @@ def toChartJS(daildic, mindic, color, name):
 
 def dailyUsage(dailyfile, minutefile, unmatched):
   """
-  
+
   Arguments:
   - `dailyfile`:
   - `minutefile`:
@@ -75,7 +72,7 @@ def dailyUsage(dailyfile, minutefile, unmatched):
       elif 'unmatched' in row[1]:
         tag = unmatched
       else:
-        tag = row[1].split(':')[1]
+        tag = row[1]
       tags.update({tag})
       if row[0] in daily.keys():
         daily[row[0]].append({tag: {'Time': row[2], 'Percent': row[3]}})
@@ -110,7 +107,7 @@ def dailyUsage(dailyfile, minutefile, unmatched):
       if 'unmatched' in inctag:
         tag = unmatched
       else:
-        tag = inctag.split(':')[1]
+        tag = inctag
       hour, minute = [int(x) for x in time.split(':')]
       moment = hour*60 + minute
       if day in minutestats.keys():
@@ -133,7 +130,7 @@ def main():
   parser.add_argument('-c', '--category_name', default='misc', help='arbtt unmatched category name')
   parser.add_argument('-d', '--daily_csv', help='CSV of daily data')
   parser.add_argument('-m', '--minute_csv', help='CSV of minute by minute data.')
-  
+
   args = parser.parse_args()
 
   categoryName = args.category_name
