@@ -71,9 +71,13 @@
         // For every tag in display_group
         for(var q in st) {
           if (!st.hasOwnProperty(q)) continue;
+          var name = q;
           var keep = false;
           for(var f=0; f<filter.length; f++) {
-            if (q.startsWith(filter[f])) {
+            var myf = filter[f];
+            if (q.startsWith(myf)) {
+              if (q.includes(":"))
+                name = name.substr(myf.length + 1);
               keep = true;
               break;
             }
@@ -88,7 +92,7 @@
           console.log("col:"+col);
           var minute = dt['minute'];
 
-          filter_div.append("p").attr("class", "tt").attr("style", "color:"+col).text(q);
+          filter_div.append("p").attr("class", "tt").attr("style", "color:"+col).text(name);
 
           var g = svg.selectAll("e")
                      .data(minute)
