@@ -22,7 +22,7 @@ def toJson(dic, jsonpath):
     json.dump(dic, f, sort_keys=True)
 
 
-def toChartJS(daildic, mindic, color, name):
+def toChartJS(daildic, mindic, waves, color, name):
   """
   Arguments:
   - `dic`: Dictionary
@@ -49,7 +49,7 @@ def toChartJS(daildic, mindic, color, name):
     # Save json for the day
     export.append({'fname': jsonname, 'totalTime': "%d:%02d:00" % (totaltime//60, totaltime%60)})
     toJson(sorted(export, key=lambda x: x['fname']), 'render/loglist.json')
-    toJson({'piedata': sorted(data, key=lambda x: x['label']), 'tagdata': mind}, 'render/data/'+jsonname)
+    toJson({'piedata': sorted(data, key=lambda x: x['label']), 'tagdata': mind, 'braindata': brain}, 'render/data/'+jsonname)
 
 def dailyUsage(dailyfile, minutefile, unmatched):
   """
@@ -169,7 +169,7 @@ def dailyUsage(dailyfile, minutefile, unmatched):
       else:
         minutestats[day] = {tag: {'minute': [moment], 'color': colors[tag]}}
 
-  toChartJS(daily, minutestats, colors, 'daily')
+  toChartJS(daily, minutestats, waves, colors, 'daily')
 
 
 def main():

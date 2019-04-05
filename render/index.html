@@ -9,6 +9,7 @@
     <link href="icon-style.css" rel="stylesheet" type="text/css">
     <script src="./libs/underscore.js"></script>
     <script src="./libs/d3.js"></script>
+    <script src="./libs/d3-shape.min.js"></script>
     <script src="./libs/spin.min.js"></script>
     <script type="text/javascript" src="./libs/jquery.min.js"></script>
     <script src="d3utils.js" charset="utf-8"></script>
@@ -19,8 +20,7 @@
         return ['Jan.', 'Feb.', 'Mar.',
                 'Apr.', 'May.', 'Jun.',
                 'Jul.', 'Aug.', 'Sep.',
-                'Oct.', 'Nov.', 'Dec.'][date.getMonth()] + " " + (function (d) {
-                  var s = d.toString(), l = s[s.length-1];
+                'Oct.', 'Nov.', 'Dec.'][date.getMonth()] + " " + (function (d) { var s = d.toString(), l = s[s.length-1];
                   if (s == 11 || s == 12) return s + 'th';
                   return s+(['st','nd','rd'][l-1] || 'th');
                 })(date.getUTCDate()) + ", " + date.getFullYear() + " ";
@@ -37,7 +37,6 @@
 
       function writeTotalTime(tot) {
         t = tot.split(":");
-        console.log(t)
           $("#totaltime").html("<span class=\"icon-clock\" style=\"font-size:2rem;color:#26A65B\" aria-hidden=\"true\"></span> " + t[0] + "hr "+ t[1]+ "min "+ t[2]+ "s" + "<span style=\"color:#888\"> logged in.</span>")
       }
 
@@ -48,14 +47,37 @@
         $("#car").html('<h2>' + ppDate(d) + '</h2>');
       }
 
-      function createBarcode(st) {
+      function createBarcode(st, waves) {
         $("#barcode").empty();
         _.each(display_groups, function(x) { visualizeMinutes(st, x); })
+        $("#brainwaves").empty();
+        visualizeBrain(waves);
+      }
+
+      function visualizeBrain(waves) {
+        var div = d3.select("#brainwaves").append("div");
+        var W = $(window).width() - 40;
+
+        var svg = div.append("svg")
+                     .attr("width", W)
+                     .attr("height", 100);
+
+        var x = d3.scale.linear()
+                        .domain([1, 1440])
+                        .range([0, W]);
+
+        var valueline = d3.svg.line()
+          .x(d => x(d[0]) )
+          .y(d => d[1] );
+
+        svg.append("path")
+           .attr("class", "line")
+           .attr("fill", "none")
+           .attr("stroke", "red")
+           .attr("d", valueline(waves.delta));
       }
 
       function visualizeMinutes(st, filter) {
-        console.log('<Minutes>');
-
         var div = d3.select("#barcode").append("div");
         var filters_div = div.append("div").attr("class", "fsdiv");
         var W = $(window).width() - 40;
@@ -87,9 +109,7 @@
           var filter_div = filters_div.append("div").attr("class", "fdiv");
           var dt = st[q];
           if(dt == null) continue;
-          console.log(dt);
           var col = dt['color'];
-          console.log("col:"+col);
           var minute = dt['minute'];
 
           filter_div.append("p").attr("class", "tt").attr("style", "color:"+col).text(name);
@@ -104,6 +124,7 @@
            .attr("height", 30)
            .attr("fill", col);
         }
+
         var t = 0;
         while(t < 1440) {
           svg.append("text")
@@ -131,21 +152,21 @@
         loaded = false;
         // we do this random thing to defeat caching.
         var json_path = "data/" + daylog.fname + "?sigh=" + Math.floor(10000*Math.random());
-        console.log(json_path)
           $.getJSON(json_path, function(data){
             loaded = true;
 
             // Save these as globals so that we can access them later
             dailyData = data['piedata'];
             minuteData = data['tagdata'];
-            console.log("data: "+data.length);
+            brainData = data['braindata'];
             createPieChart(dailyData);
-            createBarcode(minuteData);
+            createBarcode(minuteData, brainData);
           });
       }
       var totalTime;
       var dailyData;
       var minuteData;
+      var brainData;
       var loglist = [];
       var curLogId = -1;
 
@@ -153,7 +174,6 @@
         $.getJSON("loglist.json" + "?sigh=" + Math.floor(10000*Math.random()), function(data){
           // Save in global var
           loglist = data;
-          console.log("loglist" + loglist.length);
           curLogId = loglist.length - 1;
           if('gotoday' in QueryString) { curLogId = parseInt(QueryString.gotoday); }
 
@@ -167,7 +187,6 @@
             startSpinner();
             $.post("/refresh", {},
                    function(data,status){
-                     console.log("Data: " + data + "\nStatus: " + status);
                      stopSpinner();
                      if(data === 'OK') {
                        // everything went well, refresh current view
@@ -207,7 +226,7 @@
       // redraw if dirty (due to window resize event)
       function redraw() {
         if(!dirty) return;
-        createBarcode(minuteData);
+        createBarcode(minuteData, brainData);
         dirty = false;
       }
 
@@ -231,6 +250,7 @@
       <div id="piechart"></div>
 
       <div id="barcode"></div>
+      <div id="brainwaves"></div>
     </div>
   </body>
 </html>

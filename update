@@ -6,13 +6,13 @@ FILTER="\$sampleage <= 2922:00" # Last 4 months
 
 arbtt-stats --for-each=day \
               --output-format=CSV \
-              --min-percentage=0.5 \
+              --min-percentage=1.5 \
               --filter="$FILTER" \
               > /tmp/daily.csv
 
 arbtt-stats --for-each=minute \
               --output-format=CSV \
-              --min-percentage=0.5 \
+              --min-percentage=1.5 \
               --filter="$FILTER" \
               > /tmp/minute.csv
 

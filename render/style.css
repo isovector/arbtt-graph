@@ -10,7 +10,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
   footer, header, hgroup, menu, nav, section {
 	  display: block;
   }
@@ -130,7 +130,7 @@ h1 {
   -moz-user-select: none;     /* Firefox all */
   -ms-user-select: none;      /* IE 10+ */
   -o-user-select: none; /* not yet supported well */
-  user-select: none;   
+  user-select: none;
 }
 
 #totaltime {
@@ -150,6 +150,10 @@ h1 {
 }
 
 #barcode {
+  border-top: 1px solid #AAA;
+}
+
+#brainwaves {
   border-top: 1px solid #AAA;
 }
 
