@@ -55,26 +55,62 @@
       }
 
       function visualizeBrain(waves) {
+        if (Object.keys(waves).length == 0) return;
         var div = d3.select("#brainwaves").append("div");
         var W = $(window).width() - 40;
 
+        var height = 200;
         var svg = div.append("svg")
                      .attr("width", W)
-                     .attr("height", 100);
+                     .attr("height", height);
 
         var x = d3.scale.linear()
                         .domain([1, 1440])
                         .range([0, W]);
 
-        var valueline = d3.svg.line()
-          .x(d => x(d[0]) )
-          .y(d => d[1] );
+        var y = d3.scale.linear()
+                        .domain([0, 100])
+                        .range([height, 0]);
 
-        svg.append("path")
-           .attr("class", "line")
-           .attr("fill", "none")
-           .attr("stroke", "red")
-           .attr("d", valueline(waves.delta));
+        var y2 = d3.scale.linear()
+                        .domain([1, 15])
+                        .range([height, 0]);
+
+        var valueline = d3.svg.line()
+          .x((d, i) => x(waves.moment[i]) )
+          .y(d => y(d) );
+
+        var valueline2 = d3.svg.line()
+          .x((d, i) => x(waves.moment[i]) )
+          .y(d => y2(d) );
+
+        function buildWave(name, color) {
+          svg.append("path")
+             .attr("class", "line")
+             .attr("fill", "none")
+             .attr("stroke", color)
+             .attr("d", valueline(waves[name]));
+        }
+
+        function buildWave2(name, color) {
+          svg.append("path")
+             .attr("class", "line")
+             .attr("fill", "none")
+             .attr("stroke", color)
+             .attr("opacity", 0.3)
+             .attr("d", valueline2(waves[name]));
+        }
+
+        buildWave2("delta", "#005500")
+        buildWave2("theta", "#009900")
+        buildWave2("low_alpha", "#550055")
+        buildWave2("high_alpha", "#990099")
+        buildWave2("low_beta", "#555500")
+        buildWave2("high_beta", "#999900")
+        buildWave2("low_gamma", "#005555")
+        buildWave2("mid_gamma", "#009999")
+        buildWave("meditation", "blue")
+        buildWave("attention", "red")
       }
 
       function visualizeMinutes(st, filter) {
@@ -249,8 +285,8 @@
       <div id="totaltime"></div>
       <div id="piechart"></div>
 
-      <div id="barcode"></div>
       <div id="brainwaves"></div>
+      <div id="barcode"></div>
     </div>
   </body>
 </html>
