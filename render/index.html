@@ -68,6 +68,10 @@
                         .domain([1, 1440])
                         .range([0, W]);
 
+        var xgrid = d3.scale.linear()
+                        .domain([0, 100])
+                        .range([0, W]);
+
         var y = d3.scale.linear()
                         .domain([0, 100])
                         .range([height, 0]);
@@ -84,6 +88,10 @@
           .x((d, i) => x(waves.moment[i]) )
           .y(d => y2(d) );
 
+        var gridline = d3.svg.line()
+          .x(d => xgrid(d[0]))
+          .y(d => y(d[1]) );
+
         function buildWave(name, color) {
           svg.append("path")
              .attr("class", "line")
@@ -97,9 +105,23 @@
              .attr("class", "line")
              .attr("fill", "none")
              .attr("stroke", color)
-             .attr("opacity", 0.3)
+             .attr("opacity", 0.4)
              .attr("d", valueline2(waves[name]));
         }
+
+        function buildGrid(cy) {
+          svg.append("path")
+             .attr("class", "line")
+             .attr("fill", "none")
+             .attr("stroke", "black")
+             .style("stroke-dasharray", ("10, 10"))
+             .attr("opacity", 0.2)
+             .attr("d", gridline([[0,cy], [100,cy]]));
+        }
+
+        buildGrid(25)
+        buildGrid(50)
+        buildGrid(75)
 
         buildWave2("delta", "#005500")
         buildWave2("theta", "#009900")
@@ -111,6 +133,7 @@
         buildWave2("mid_gamma", "#009999")
         buildWave("meditation", "blue")
         buildWave("attention", "red")
+
       }
 
       function visualizeMinutes(st, filter) {
