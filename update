@@ -1,5 +1,6 @@
 #!/bin/sh
 
+set -x
 CATEGORIZE_FILE="/home/sandy/.arbtt/categorize.cfg"
 CATEGORY="prj"
 FILTER="\$sampleage <= 2922:00" # Last 4 months
@@ -15,5 +16,12 @@ arbtt-stats --for-each=minute \
               --min-percentage=1.5 \
               --filter="$FILTER" \
               > /tmp/minute.csv
+
+mkdir /tmp/brain
+rm /tmp/brain/*
+for FILE in /home/sandy/.arbtt/brain/*; do
+  BN=$(basename $FILE)
+  /home/sandy/.local/bin/MindWave-exe $BN > /tmp/brain/$BN
+done
 
 python3 readArbttStats.py -c 'misc' -d /tmp/daily.csv -m /tmp/minute.csv
