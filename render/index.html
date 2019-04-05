@@ -81,10 +81,18 @@
                         .range([height, 0]);
 
         var valueline = d3.svg.line()
+          .defined((d, i) => {
+            if (i == 0) return true;
+            return (waves.moment[i] - waves.moment[i - 1] <= 2)
+          })
           .x((d, i) => x(waves.moment[i]) )
           .y(d => y(d) );
 
         var valueline2 = d3.svg.line()
+          .defined((d, i) => {
+            if (i == 0) return true;
+            return (waves.moment[i] - waves.moment[i - 1] <= 2)
+          })
           .x((d, i) => x(waves.moment[i]) )
           .y(d => y2(d) );
 
