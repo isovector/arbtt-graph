@@ -170,12 +170,12 @@ def dailyUsage(dailyfile, minutefile, unmatched):
         if tag in minutestats[day].keys():
           minutestats[day][tag]['minute'].append(moment)
         else:
-          if tag in colors.keys():
-            minutestats[day][tag] = {'minute': [moment], 'color': colors[tag]}
-          else:
+          if tag not in colors.keys():
             colors[tag] = d3colors[(len(colors)+1) % len(d3colors)]
-            minutestats[day][tag] = {'minute': [moment], 'color': colors[tag]}
+          minutestats[day][tag] = {'minute': [moment], 'color': colors[tag]}
       else:
+        if tag not in colors.keys():
+            colors[tag] = d3colors[(len(colors)+1) % len(d3colors)]
         minutestats[day] = {tag: {'minute': [moment], 'color': colors[tag]}}
 
   toChartJS(daily, minutestats, colors, 'daily')
